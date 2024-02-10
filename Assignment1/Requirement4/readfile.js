@@ -1,10 +1,5 @@
-const fs = require('fs');
-const { promisify } = require('util');
+const fs = require('fs').promises;
 
-// Promisified version of fs.readFile sync function
-const readFileAsync = promisify(fs.readFile);
-
-// Attach 'exit' and 'unhandledRejection' events to the 'process' object
 process.on('exit', (code) => {
   console.log(`'exit' event called with code: ${code}`);
 });
@@ -14,20 +9,19 @@ process.on('unhandledRejection', (reason, promise) => {
   throw reason;
 });
 
-// Function to simulate reading a file with a promise
 const readFileSyncPromise = async (filename) => {
   try {
-    const data = await readFileAsync(filename);
-    return data;
+    const data = await fs.readFile(filename);
+    return data.toString();
   } catch (error) {
+    console.error('Error reading file:', error.message);
     throw error;
   }
 };
 
-// Usage of the new function with incorrect filename
-readFileSyncPromise('nonexistentfile.txt')
-  .then((data) => {
-    console.log('File content:', data.toString());
+readFileSyncPromise('pom.txt')
+  .then((content) => {
+    console.log('File content:', content);
   })
   .catch((error) => {
     console.error('Error:', error.message);
